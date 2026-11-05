@@ -19,12 +19,29 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
+        .checkbox-gamer {
+            width: 28 h;
+            height: 28px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #334155;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .checkbox-gamer.checked {
+            background: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- PANTALLA DE LOGIN -->
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
+    <!-- LOGIN -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#070a12] p-4">
         <form onsubmit="handleLogin(event)" class="glow-card max-w-sm w-full p-6 rounded-2xl text-center space-y-6 border border-indigo-500/30">
             <div class="w-20 h-20 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto text-3xl shadow-lg border border-indigo-500/40">
                 <i class="fa-solid fa-gamepad"></i>
@@ -75,48 +92,70 @@
             </div>
         </header>
 
-        <!-- NAVEGACIÓN PRINCIPAL HORIZONTAL (ESTILO ORIGINAL) -->
+        <!-- NAVEGACIÓN HORIZONTAL (VERSIÓN 1) -->
         <nav class="max-w-5xl mx-auto px-6 mt-6">
             <div class="flex flex-wrap gap-3 border-b border-slate-800/60 pb-3">
-                <button onclick="switchTab('tasks')" id="tab-tasks" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
+                <button onclick="switchTab('tasks')" id="tab-tasks" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
                     <i class="fa-solid fa-list-check"></i>
                     <span>Actividades de Hoy</span>
+                </button>
+                <button onclick="switchTab('progress')" id="tab-progress" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Mi Progreso</span>
                 </button>
                 <button onclick="switchTab('piggy')" id="tab-piggy" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Mi Chanchito</span>
                 </button>
-                <button onclick="switchTab('rewards')" id="tab-rewards" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                <button onclick="switchTab('rewards')" id="tab-rewards" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
                     <i class="fa-solid fa-gift"></i>
                     <span>Recompensas</span>
                 </button>
                 <button onclick="switchTab('admin')" id="tab-admin" class="hidden px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
-                    <i class="fa-solid fa-chart-line"></i>
+                    <i class="fa-solid fa-chart-pie"></i>
                     <span>📊 Histórico y Métricas (Padres)</span>
                 </button>
             </div>
         </nav>
 
-        <!-- CONTENIDO PRINCIPAL -->
+        <!-- MAIN -->
         <main class="max-w-5xl mx-auto px-6 mt-6 space-y-6">
 
             <!-- SECCIÓN TAREAS -->
-            <div id="section-tasks" class="hidden space-y-4">
+            <div id="section-tasks" class="space-y-6">
+                <!-- RECUADRO "OBJETIVO DEL DÍA" ORIGINAL -->
                 <div class="glow-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-indigo-500">
-                    <div>
-                        <p class="text-xs text-slate-400">Progreso del Día</p>
-                        <h3 id="progress-text" class="text-lg font-bold text-white">0 de 5 tareas</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Objetivo del día</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">¡Paso a paso se llega lejos! Vamos por la siguiente tarea.</p>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 rounded-full border-4 border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-400" id="progress-circle">
-                        0%
+                    <div class="text-right">
+                        <span id="progress-percent" class="text-xl font-black text-emerald-400">0%</span>
+                        <span class="block text-[9px] uppercase font-bold text-slate-500 tracking-wider">COMPLETADO</span>
                     </div>
                 </div>
 
-                <div class="space-y-3" id="tasks-container"></div>
+                <!-- CONTENEDOR DE BLOQUES MAÑANA / TARDE / NOCHE -->
+                <div id="blocks-container" class="space-y-6"></div>
             </div>
 
-            <!-- SECCIÓN AHORRO -->
-            <div id="section-piggy" class="hidden space-y-4 max-w-xl mx-auto">
+            <!-- SECCIÓN MI PROGRESO -->
+            <div id="section-progress" class="hidden space-y-6">
+                <div class="glow-card p-6 rounded-2xl border-l-4 border-indigo-500 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-trophy text-amber-400 mr-2.5"></i> Resumen de Logros
+                    </h3>
+                    <p class="text-xs text-slate-400">Continúa completando tus actividades para ganar más puntos y desbloquear tus recompensas.</p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN MI CHANCHITO -->
+            <div id="section-piggy" class="hidden space-y-6 max-w-xl mx-auto">
                 <div class="glow-card p-6 rounded-2xl text-center space-y-4 border-l-4 border-emerald-500">
                     <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
                         <i class="fa-solid fa-coins"></i>
@@ -136,9 +175,8 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN RECOMPENSAS (RESTAURADA EN 2 COLUMNAS) -->
-            <div id="section-rewards" class="space-y-6">
-                <!-- BANNER RECOMPENSAS -->
+            <!-- SECCIÓN RECOMPENSAS (2 COLUMNAS) -->
+            <div id="section-rewards" class="hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glow-card p-6 rounded-2xl border-l-4 border-indigo-500">
                     <div>
                         <h3 class="text-xl font-bold text-white flex items-center">
@@ -151,19 +189,16 @@
                             <i class="fa-solid fa-trophy"></i>
                         </div>
                         <div>
-                            <span class="text-[10px] uppercase font-bold text-indigo-300 tracking-wider block">Avance Salida Especial</span>
+                            <span class="text-[10px] uppercase font-bold text-indigo-300 tracking-wider block">AVANCE SALIDA ESPECIAL</span>
                             <span id="meta-counter" class="text-sm font-bold text-white">0 / 4 Metas Canjeadas</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- CUADRÍCULA DE PREMIOS EN 2 COLUMNAS -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rewards-grid">
-                    <!-- Tarjetas generadas dinámicamente -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rewards-grid"></div>
             </div>
 
-            <!-- SECCIÓN PADRES / HISTÓRICO -->
+            <!-- SECCIÓN ADMIN (PADRES) -->
             <div id="section-admin" class="hidden space-y-4">
                 <div class="glow-card p-5 rounded-2xl space-y-4">
                     <h3 class="font-bold text-white text-base flex items-center">
@@ -177,7 +212,7 @@
                 <div class="glow-card p-5 rounded-2xl space-y-3">
                     <div class="flex items-center justify-between">
                         <h3 class="font-bold text-white text-base flex items-center">
-                            <i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico de Compromiso
+                            <i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico
                         </h3>
                         <button onclick="resetData()" class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-lg hover:bg-red-500/40 transition">Reiniciar App</button>
                     </div>
@@ -189,267 +224,15 @@
     </div>
 
     <script>
-        const DEFAULT_TASKS = [
-            { id: 1, text: '☀️ Preparar mochila y lunch', time: 'Mañana', pts: 10, done: false },
-            { id: 2, text: '📚 Tareas escolares (Bloque 18:00)', time: 'Tarde', pts: 20, done: false },
-            { id: 3, text: '🇬🇧 Inglés online / Aseo personal', time: 'Tarde', pts: 15, done: false },
-            { id: 4, text: '🍽️ Cenar en familia', time: 'Noche', pts: 10, done: false },
-            { id: 5, text: '🌙 Mochila revisada + Uniforme listo', time: 'Noche', pts: 15, done: false }
-        ];
-
-        const DEFAULT_REWARDS = [
-            { id: 1, title: 'Noche de Película Juntos', desc: 'Tú eliges la película y las palomitas', cost: 50, icon: 'fa-film' },
-            { id: 2, title: 'Elegir la Cita/Salida Familiar', desc: 'Tú decides a dónde vamos este fin de semana', cost: 80, icon: 'fa-map-location-dot' },
-            { id: 3, title: 'Noche de Juegos de Mesa', desc: 'Tú eliges cuál juego jugaremos todos', cost: 40, icon: 'fa-dice' },
-            { id: 4, title: 'Tiempo Extra de Videojuegos (30 min)', desc: 'Treinta minutos adicionales de consola o PC', cost: 60, icon: 'fa-gamepad' }
-        ];
-
-        let state = JSON.parse(localStorage.getItem('santiago_quest_state'));
-
-        if (!state || !state.tasks || state.tasks.length === 0) {
-            state = {
-                role: null,
-                points: 0,
-                savings: 0,
-                claimedMetas: 0,
-                tasks: DEFAULT_TASKS,
-                history: []
-            };
-            saveState();
-        }
-
-        function saveState() {
-            localStorage.setItem('santiago_quest_state', JSON.stringify(state));
-        }
-
-        function resetData() {
-            if (confirm('¿Quieres reiniciar todas las tareas y los datos del tablero?')) {
-                localStorage.removeItem('santiago_quest_state');
-                location.reload();
-            }
-        }
-
-        function handleLogin(e) {
-            if (e) e.preventDefault();
-            const pin = document.getElementById('pin-input').value.trim();
-            const errorEl = document.getElementById('login-error');
-
-            if (pin === '1234') {
-                state.role = 'user';
-                errorEl.classList.add('hidden');
-                initApp();
-            } else if (pin === '9999') {
-                state.role = 'admin';
-                errorEl.classList.add('hidden');
-                initApp();
-            } else {
-                errorEl.classList.remove('hidden');
-            }
-        }
-
-        function logout() {
-            document.getElementById('app-content').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('pin-input').value = '';
-            document.getElementById('login-error').classList.add('hidden');
-        }
-
-        function initApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('hidden');
-
-            const roleBadge = document.getElementById('role-badge');
-            const tabAdmin = document.getElementById('tab-admin');
-
-            if (state.role === 'admin') {
-                roleBadge.innerText = 'Modo Administración (Padres)';
-                roleBadge.className = 'text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium';
-                tabAdmin.classList.remove('hidden');
-            } else {
-                roleBadge.innerText = 'Modo Jugador';
-                roleBadge.className = 'text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-medium';
-                tabAdmin.classList.add('hidden');
-            }
-
-            renderAll();
-        }
-
-        function switchTab(tab) {
-            ['tasks', 'piggy', 'rewards', 'admin'].forEach(t => {
-                const sec = document.getElementById(`section-${t}`);
-                const btn = document.getElementById(`tab-${t}`);
-                if (sec) sec.classList.add('hidden');
-                if (btn && t !== 'admin') {
-                    btn.className = 'px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white';
-                }
-            });
-
-            document.getElementById(`section-${tab}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tab}`);
-            if (activeBtn && tab !== 'admin') {
-                activeBtn.className = 'px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30';
-            }
-
-            if (tab === 'admin') renderAdminChart();
-        }
-
-        function renderAll() {
-            document.getElementById('points-display').innerText = state.points || 0;
-            document.getElementById('savings-amount').innerText = `$${(state.savings || 0).toFixed(2)}`;
-            document.getElementById('meta-counter').innerText = `${state.claimedMetas || 0} / 4 Metas Canjeadas`;
-            renderTasks();
-            renderRewards();
-            renderHistoryLogs();
-        }
-
-        function renderTasks() {
-            const container = document.getElementById('tasks-container');
-            container.innerHTML = '';
-            let completedCount = 0;
-
-            if (!state.tasks || state.tasks.length === 0) {
-                state.tasks = DEFAULT_TASKS;
-                saveState();
-            }
-
-            state.tasks.forEach(task => {
-                if (task.done) completedCount++;
-
-                const card = document.createElement('div');
-                card.className = `glow-card p-4 rounded-xl flex items-center justify-between border ${task.done ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-slate-800'}`;
-                card.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${task.id})" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
-                        <div>
-                            <p class="text-sm font-semibold ${task.done ? 'line-through text-slate-400' : 'text-white'}">${task.text}</p>
-                            <span class="text-[10px] text-slate-400">${task.time}</span>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-amber-400">+${task.pts} pts</span>
-                `;
-                container.appendChild(card);
-            });
-
-            const percent = Math.round((completedCount / state.tasks.length) * 100);
-            document.getElementById('progress-text').innerText = `${completedCount} de ${state.tasks.length} tareas`;
-            document.getElementById('progress-circle').innerText = `${percent}%`;
-        }
-
-        function toggleTask(id) {
-            const task = state.tasks.find(t => t.id === id);
-            if (task) {
-                task.done = !task.done;
-                if (task.done) {
-                    state.points += task.pts;
-                    logActivity(`Completó: "${task.text}" (+${task.pts} pts)`);
-                } else {
-                    state.points = Math.max(0, state.points - task.pts);
-                    logActivity(`Desmarcó: "${task.text}"`);
-                }
-                saveState();
-                renderAll();
-            }
-        }
-
-        function addDailySavings() {
-            state.savings = (state.savings || 0) + 50;
-            state.points = (state.points || 0) + 15;
-            logActivity(`Guardó $50.00 en el chanchito (+15 pts bonus)`);
-            saveState();
-            renderAll();
-            alert('¡Excelente! Guardaste $50 en tu ahorro y ganaste +15 puntos extra.');
-        }
-
-        function renderRewards() {
-            const container = document.getElementById('rewards-grid');
-            container.innerHTML = '';
-
-            DEFAULT_REWARDS.forEach(reward => {
-                const canAfford = state.points >= reward.cost;
-                const card = document.createElement('div');
-                card.className = 'glow-card p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between space-y-4';
-                card.innerHTML = `
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl shrink-0 mt-0.5">
-                            <i class="fa-solid ${reward.icon}"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white">${reward.title}</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">${reward.desc}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
-                        <span class="text-sm font-bold text-amber-400">★ ${reward.cost} Pts</span>
-                        <button onclick="claimReward('${reward.title}', ${reward.cost})" ${!canAfford ? 'disabled' : ''} class="px-4 py-2 rounded-xl text-xs font-bold transition ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg active:scale-95' : 'bg-slate-800/80 text-slate-500 cursor-not-allowed'}">
-                            ${canAfford ? 'Canjear Premio' : 'Faltan Puntos'}
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function claimReward(title, cost) {
-            if (state.points >= cost) {
-                state.points -= cost;
-                state.claimedMetas = (state.claimedMetas || 0) + 1;
-                logActivity(`Canjeó la recompensa: "${title}" (-${cost} pts)`);
-                saveState();
-                renderAll();
-                alert(`¡Felicidades! Canjeaste: ${title}`);
-            }
-        }
-
-        function logActivity(detail) {
-            if (!state.history) state.history = [];
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
-            state.history.unshift({ date: dateStr, detail });
-            if (state.history.length > 30) state.history.pop();
-        }
-
-        function renderHistoryLogs() {
-            const container = document.getElementById('history-logs');
-            if (!container) return;
-            container.innerHTML = (!state.history || state.history.length === 0) ? '<p class="text-slate-500 text-center py-2">Sin registros de actividad</p>' : '';
-            if (state.history) {
-                state.history.forEach(item => {
-                    const log = document.createElement('div');
-                    log.className = 'bg-slate-900/50 p-2.5 rounded-lg border border-slate-800/60 flex justify-between';
-                    log.innerHTML = `<span>${item.detail}</span><span class="text-slate-500 text-[10px] ml-2">${item.date}</span>`;
-                    container.appendChild(log);
-                });
-            }
-        }
-
-        function renderAdminChart() {
-            const ctx = document.getElementById('weeklyChart');
-            if (!ctx) return;
-            
-            if (window.myAdminChart) window.myAdminChart.destroy();
-
-            window.myAdminChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                    datasets: [{
-                        label: '% Cumplimiento',
-                        data: [80, 100, 60, 80, 100, 40, 60],
-                        backgroundColor: '#6366f1',
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, max: 100, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+        // ESTRUCTURA ORIGINAL DE RUTINAS POR BLOQUES (VERSIÓN 1)
+        const ROUTINE_BLOCKS = [
+            {
+                id: 'morning',
+                title: 'BLOQUE MAÑANA',
+                time: '(05:30 - 06:35)',
+                icon: 'fa-sun text-amber-400',
+                tasks: [
+                    { id: 101, title: 'Alistarme y Desayuno Rápido', time: '05:30 - 06:10', pts: 10, done: false }
+                ]
+            },
+            {
