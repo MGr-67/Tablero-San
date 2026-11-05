@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santiago Quest - Tablero de Control</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Outfits / Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        neonPurple: '#a855f7',
+                        neonBlue: '#38bdf8',
+                        neonGreen: '#4ade80',
+                        neonPink: '#f43f5e',
+                        neonYellow: '#facc15',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .neon-border-purple {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+        }
+        .neon-border-blue {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+        }
+        .neon-border-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+            border: 1px solid rgba(74, 222, 128, 0.5);
+        }
+        .glow-text-purple {
+            text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+        }
+        .glow-text-blue {
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+        }
+        .glow-text-green {
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-neonPurple selection:text-white pb-20 md:pb-6">
+
+    <!-- PANTALLA DE LOGIN (MODAL / OVERLAY) -->
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-purple-500/30 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center neon-border-purple">
+            <div class="w-16 h-16 bg-purple-500/20 border border-purple-400 text-purple-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white mb-1 glow-text-purple">Santiago Quest</h1>
+            <p class="text-xs text-slate-400 mb-6">Ingresa tu PIN de acceso para iniciar sesión</p>
+            
+            <div class="space-y-4">
+                <input type="password" id="pinInput" placeholder="••••" maxlength="4" class="w-full text-center text-3xl tracking-widest py-3 bg-slate-800/80 border border-slate-700 rounded-xl text-neonBlue focus:outline-none focus:border-neonBlue focus:ring-2 focus:ring-neonBlue/20">
+                <button onclick="login()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-purple-600/30 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span>ENTRAR AL TABLERO</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 mt-4">PIN Demo predeterminado: <strong class="text-slate-300">1234</strong></p>
+            <div id="loginError" class="hidden mt-3 text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg">
+                PIN Incorrecto. Intenta de nuevo.
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div id="appContainer" class="hidden max-w-4xl mx-auto w-full px-4 pt-4 sm:pt-6">
+        
+        <!-- HEADER TOP BAR -->
+        <header class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 mb-6 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md border border-purple-400/30">
+                    S
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg text-white leading-tight flex items-center gap-2">
+                        Santiago V. <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30">Nivel 1er Sec</span>
+                    </h2>
+                    <p id="currentDayText" class="text-xs text-slate-400 capitalize">Cargando fecha...</p>
+                </div>
+            </div>
+
+            <!-- CONTADORES Y METRICAS RAPIDAS -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-800">
+                <div class="bg-slate-800/80 border border-yellow-500/30 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold leading-none">Puntos</div>
+                        <span id="userPoints" class="text-sm font-extrabold text-yellow-400">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 border border-emerald-500/30 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-piggy-bank text-emerald-400 text-sm"></i>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold leading-none">Ahorro</div>
+                        <span id="userSavings" class="text-sm font-extrabold text-emerald-400">$0</span>
+                    </div>
+                </div>
+
+                <button onclick="logout()" class="w-9 h-9 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-colors ml-1" title="Cerrar Sesión">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- MENÚ DE NAVEGACIÓN TAB PESTAÑAS -->
+        <nav class="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-none">
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn active px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/30 whitespace-nowrap">
+                <i class="fa-solid fa-list-check"></i> Actividades de Hoy
+            </button>
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 whitespace-nowrap">
+                <i class="fa-solid fa-chart-line"></i> Mi Progreso
+            </button>
+            <button onclick="switchTab('savings')" id="tab-savings" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 whitespace-nowrap">
+                <i class="fa-solid fa-wallet"></i> Mi Chanchito
+            </button>
+            <button onclick="switchTab('rewards')" id="tab-rewards" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 whitespace-nowrap">
+                <i class="fa-solid fa-gift"></i> Recompensas
+            </button>
+        </nav>
+
+        <!-- SECCIÓN 1: ACTIVIDADES DE HOY (RUTINA DIARIA) -->
+        <section id="view-tasks" class="view-content space-y-6">
+            
+            <!-- BANNER DE ENERGÍA / MOTIVACIÓN -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white">Objetivo del día</h3>
+                        <p class="text-xs text-indigo-200" id="motivationQuote">¡Completa tus tareas paso a paso para ganar estrellas!</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="dailyPercentText" class="text-xl font-extrabold text-neonGreen">0%</span>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Completado</p>
+                </div>
+            </div>
+
+            <!-- BLOQUES DE TAREAS -->
+            <div class="space-y-4">
+                
+                <!-- BLOQUE 1: MAÑANA -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <h4 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-sun"></i> BLOQUE MAÑANA <span class="text-xs font-normal text-slate-400">(05:30 - 06:35)</span>
+                        </h4>
+                        <span class="text-xs text-slate-400 font-mono" id="morningCount">0/1</span>
+                    </div>
+
+                    <div id="morningTasks" class="space-y-2">
+                        <!-- Generado Dinámicamente por JS -->
+                    </div>
+                </div>
+
+                <!-- BLOQUE 2: TARDE (ESCUELA, NATACION, INGLES Y TAREA) -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <h4 class="text-sm font-bold text-sky-400 flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-sun"></i> BLOQUE TARDE <span class="text-xs font-normal text-slate-400">(15:40 - 20:00)</span>
+                        </h4>
+                        <span class="text-xs text-slate-400 font-mono" id="afternoonCount">0/4</span>
+                    </div>
+
+                    <div id="afternoonTasks" class="space-y-2">
+                        <!-- Generado Dinámicamente por JS -->
+                    </div>
+                </div>
+
+                <!-- BLOQUE 3: NOCHE -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <h4 class="text-sm font-bold text-indigo-400 flex items-center gap-2">
+                            <i class="fa-solid fa-moon"></i> BLOQUE NOCHE <span class="text-xs font-normal text-slate-400">(20:00 - 21:30)</span>
+                        </h4>
+                        <span class="text-xs text-slate-400 font-mono" id="nightCount">0/3</span>
+                    </div>
+
+                    <div id="nightTasks" class="space-y-2">
+                        <!-- Generado Dinámicamente por JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: TABLERO DE CONTROL / DASHBOARD -->
+        <section id="view-dashboard" class="view-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- PROGRESS CIRCLE & ENERGY CARD -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center flex flex-col items-center justify-center">
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Cumplimiento Global de Hoy</h3>
+                    
+                    <div class="relative w-40 h-40 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="dashCircleProgress" class="text-neonPurple transition-all duration-700 ease-out" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="dashPercentText" class="text-3xl font-black text-white">0%</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Completado</span>
+                        </div>
+                    </div>
+
+                    <p id="dashStatusMsg" class="mt-4 text-xs text-slate-300 bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-xl">
+                        ¡Comienza marcando tus tareas para cargar la barra de energía!
+                    </p>
+                </div>
+
+                <!-- RACHAS Y METRICAS -->
+                <div class="space-y-4 flex flex-col justify-between">
+                    
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Racha Activa</h4>
+                                <p class="text-xs text-slate-400">Días seguidos cumpliendo metas</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="streakDays" class="text-2xl font-black text-amber-400">1 Día</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Metas Cumplidas</h4>
+                                <p class="text-xs text-slate-400">Total de tareas logradas</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="totalCompletedTasks" class="text-2xl font-black text-purple-400">0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Salud Mental & Enfoque</h4>
+                                <p class="text-xs text-slate-400">Nivel de sobrecarga actual</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ÓPTIMO</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: MI CHANCHITO / AHORRO -->
+        <section id="view-savings" class="view-content hidden space-y-6">
+            
+            <div class="bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 border border-emerald-500/30 rounded-2xl p-6 text-center space-y-4">
+                <div class="w-16 h-16 bg-emerald-500/20 border border-emerald-400 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-lg">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Mi Chanchito de Ahorros</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">
+                        Cada día recibes $50.00 para tu lunch. Si decides ahorrar y comer bien en el comedor, ¡agrega tu dinero al chanchito!
+                    </p>
+                </div>
+
+                <div class="py-2">
+                    <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Ahorro Total Acumulado</span>
+                    <div id="savingsBigText" class="text-4xl font-extrabold text-emerald-400 glow-text-green mt-1">$0.00</div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto">
+                    <button onclick="addSavings(50)" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Ahorrar $50 de Hoy</span>
+                    </button>
+                    <button onclick="resetSavingsModal()" class="w-full sm:w-auto px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-semibold rounded-xl text-xs transition-colors">
+                        Ajustar
+                    </button>
+                </div>
+            </div>
+
+            <!-- PROGRESO HACIA META DE AHORRO -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-emerald-400"></i> Meta de Ahorro para Salida Especial
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono" id="savingsTargetText">$0 / $500</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700">
+                    <div id="savingsProgressBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-slate-400">
+                    Al llegar a <strong class="text-emerald-400">$500</strong> de ahorro personal, ¡podrás desbloquear un pase directo a la gran Salida Especial!
+                </p>
+            </div>
+
+        </section>
+
+        <!-- SECCIÓN 4: TIENDA DE RECOMPENSAS -->
+        <section id="view-rewards" class="view-content hidden space-y-6">
+            
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-store text-purple-400"></i> Tienda de Recompensas
+                    </h3>
+                    <p class="text-xs text-slate-400">Canjea tus puntos ganados por premios reales para compartir en familia.</p>
+                </div>
+
+                <!-- CONTADOR DE METAS ESPECIALES (4 METAS = 1 SALIDA) -->
+                <div class="bg-purple-950/60 border border-purple-500/40 px-4 py-2 rounded-xl flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-purple-300 uppercase font-bold">Avance Salida Especial</div>
+                        <div id="specialRewardCounter" class="text-xs font-extrabold text-white">0 / 4 Metas Canjeadas</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARDS DE RECOMPENSAS -->
+            <div id="rewardsList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Generado dinámicamente -->
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- NOTIFICACIÓN TIPO TOAST MOTIVACIONAL -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none max-w-xs w-full">
+        <div class="bg-slate-900 border border-emerald-500/50 rounded-2xl p-4 shadow-2xl flex items-center gap-3 neon-border-green">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+                <h4 id="toastTitle" class="text-sm font-bold text-white">¡Bien hecho!</h4>
+                <p id="toastMsg" class="text-xs text-slate-300">Has sumado +10 Puntos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LÓGICA COMPLETA -->
+    <script>
+        // DATA INICIAL Y ESTADO GLOBAL
+        const PIN_CORRECTO = "1234";
+
+        // TAREAS DIARIAS BASE SEGÚN HORARIO REAL
+        const baseTasks = [
+            // Mañana
+            { id: 'm1', title: 'Alistarme y Desayuno Rápido', time: '05:30 - 06:10', block: 'morning', points: 10, completed: false },
+            
+            // Tarde
+            { id: 't1', title: 'Comedor y Salida de Escuela', time: '14:00 - 15:40', block: 'afternoon', points: 10, completed: false },
+            { id: 't2', title: 'Natación (Solo M y J) / Descanso Táctico', time: '16:00 - 17:00', block: 'afternoon', points: 15, completed: false, conditional: 'M/J Natación' },
+            { id: 't3', title: 'Bloque 1 Tarea Escolar (45 min sin distracciones)', time: '18:00 - 19:00', block: 'afternoon', points: 20, completed: false },
+            { id: 't4', title: 'Clase de Inglés Online (L, M, V) / Baño y Aseo (M, J)', time: '19:00 - 20:00', block: 'afternoon', points: 15, completed: false },
+
+            // Noche
+            { id: 'n1', title: 'Cena en Familia', time: '20:00 - 20:40', block: 'night', points: 10, completed: false },
+            { id: 'n2', title: 'Revisar mochila, guardar materiales y uniforme', time: '20:40 - 21:10', block: 'night', points: 15, completed: false },
+            { id: 'n3', title: 'Viento en Calma: Desconexión y a Dormir', time: '21:10 - 21:30', block: 'night', points: 10, completed: false }
+        ];
+
+        // RECOMPENSAS TIENDA
+        const rewardsData = [
+            { id: 'r1', title: 'Noche de Película Juntos', desc: 'Tú eliges la película y las palomitas', cost: 50, icon: 'fa-film', color: 'purple' },
+            { id: 'r2', title: 'Elegir la Cita/Salida Familiar', desc: 'Tú decides a dónde vamos este fin de semana', cost: 80, icon: 'fa-map-location-dot', color: 'blue' },
+            { id: 'r3', title: 'Noche de Juegos de Mesa', desc: 'Tú eliges cuál juego jugaremos todos', cost: 40, icon: 'fa-dice', color: 'amber' },
+            { id: 'r4', title: 'Tiempo Extra de Videojuegos (30 min)', desc: 'Treinta minutos adicionales de consola o pc', cost: 60, icon: 'fa-gamepad', color: 'emerald' },
+        ];
+
+        let appState = {
+            isLoggedIn: false,
+            points: 0,
+            savings: 0,
+            completedTaskIds: [],
+            streak: 1,
+            claimedRewardsCount: 0
+        };
+
+        // AL CARGAR LA PÁGINA
+        window.onload = function() {
+            loadLocalStorage();
+            updateDateDisplay();
+            if (appState.isLoggedIn) {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                renderAll();
+            }
+        };
+
+        // GUARDAR Y CARGAR LOCALSTORAGE
+        function saveLocalStorage() {
+            localStorage.setItem('santiago_quest_state', JSON.stringify(appState));
+        }
+
+        function loadLocalStorage() {
+            const saved = localStorage.getItem('santiago_quest_state');
+            if (saved) {
+                try {
+                    appState = { ...appState, ...JSON.parse(saved) };
+                } catch(e) {
+                    console.error("Error al cargar estado:", e);
+                }
+            }
+        }
+
+        // FECHA ACTUAL
+        function updateDateDisplay() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('es-ES', options);
+            document.getElementById('currentDayText').textContent = dateStr;
+        }
+
+        // LOGIN / LOGOUT
+        function login() {
+            const pin = document.getElementById('pinInput').value.trim();
+            const errorEl = document.getElementById('loginError');
+
+            if (pin === PIN_CORRECTO) {
+                appState.isLoggedIn = true;
+                saveLocalStorage();
+                errorEl.classList.add('hidden');
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                renderAll();
+                showToast('¡Bienvenido Santiago!', 'Tu tablero está listo para hoy.');
+            } else {
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            appState.isLoggedIn = false;
+            saveLocalStorage();
+            document.getElementById('pinInput').value = '';
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
+        }
+
+        // CAMBIO DE PESTAÑAS
+        function switchTab(tabName) {
+            document.querySelectorAll('.view-content').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white', 'shadow-lg', 'shadow-purple-600/30');
+                btn.classList.add('bg-slate-800', 'text-slate-400');
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('bg-slate-800', 'text-slate-400');
+            activeBtn.classList.add('bg-purple-600', 'text-white', 'shadow-lg', 'shadow-purple-600/30');
+        }
+
+        // RENDERIZADO GENERAL
+        function renderAll() {
+            renderHeaderStats();
+            renderTasks();
+            renderDashboard();
+            renderSavings();
+            renderRewards();
+        }
+
+        function renderHeaderStats() {
+            document.getElementById('userPoints').textContent = appState.points;
+            document.getElementById('userSavings').textContent = `$${appState.savings}.00`;
+        }
+
+        // RENDER DE TAREAS
+        function renderTasks() {
+            const morningContainer = document.getElementById('morningTasks');
+            const afternoonContainer = document.getElementById('afternoonTasks');
+            const nightContainer = document.getElementById('nightTasks');
+
+            morningContainer.innerHTML = '';
+            afternoonContainer.innerHTML = '';
+            nightContainer.innerHTML = '';
+
+            let morningDone = 0, morningTotal = 0;
+            let afternoonDone = 0, afternoonTotal = 0;
+            let nightDone = 0, nightTotal = 0;
+
+            baseTasks.forEach(task => {
+                const isDone = appState.completedTaskIds.includes(task.id);
+
+                if (task.block === 'morning') { morningTotal++; if(isDone) morningDone++; }
+                if (task.block === 'afternoon') { afternoonTotal++; if(isDone) afternoonDone++; }
+                if (task.block === 'night') { nightTotal++; if(isDone) nightDone++; }
+
+                const taskHtml = `
+                    <div class="flex items-center justify-between p-3 bg-slate-800/60 border ${isDone ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-slate-700/60'} rounded-xl transition-all">
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleTask('${task.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isDone ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20' : 'bg-slate-700 hover:bg-slate-600 text-transparent'} border border-slate-600">
+                                <i class="fa-solid fa-check text-sm"></i>
+                            </button>
+                            <div>
+                                <h5 class="text-sm font-semibold ${isDone ? 'line-through text-slate-400' : 'text-slate-100'}">${task.title}</h5>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-[11px] text-slate-400"><i class="fa-regular fa-clock text-slate-500 mr-1"></i>${task.time}</span>
+                                    ${task.conditional ? `<span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded border border-sky-500/30">${task.conditional}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 rounded-lg shrink-0">+${task.points} pts</span>
+                    </div>
+                `;
+
+                if (task.block === 'morning') morningContainer.innerHTML += taskHtml;
+                if (task.block === 'afternoon') afternoonContainer.innerHTML += taskHtml;
+                if (task.block === 'night') nightContainer.innerHTML += taskHtml;
+            });
+
+            document.getElementById('morningCount').textContent = `${morningDone}/${morningTotal}`;
+            document.getElementById('afternoonCount').textContent = `${afternoonDone}/${afternoonTotal}`;
+            document.getElementById('nightCount').textContent = `${nightDone}/${nightTotal}`;
+
+            const totalDone = appState.completedTaskIds.length;
+            const grandTotal = baseTasks.length;
+            const percent = Math.round((totalDone / grandTotal) * 100);
+
+            document.getElementById('dailyPercentText').textContent = `${percent}%`;
+            
+            // Frases motivacionales adaptadas a TDAH
+            const quotes = [
+                "¡Paso a paso se llega lejos! Vamos por la siguiente tarea.",
+                "¡Excelente enfoque, Santiago! Sigue así.",
+                "¡Cargando la barra de energía del día!",
+                "¡Tu cerebro está entrenando como un campeón!"
+            ];
+            if (percent === 100) {
+                document.getElementById('motivationQuote').textContent = "¡NIVEL DE HOY COMPLETADO! Eres un crack 🚀";
+            } else {
+                document.getElementById('motivationQuote').textContent = quotes[totalDone % quotes.length];
+            }
+        }
+
+        // MARCAR / DESMARCAR TAREA
+        function toggleTask(taskId) {
+            const task = baseTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const index = appState.completedTaskIds.indexOf(taskId);
+            if (index > -1) {
+                // Quitar
+                appState.completedTaskIds.splice(index, 1);
+                appState.points = Math.max(0, appState.points - task.points);
+            } else {
+                // Agregar
+                appState.completedTaskIds.push(taskId);
+                appState.points += task.points;
+                showToast("¡Tarea completada!", `+${task.points} Puntos ganados.`);
+            }
+
+            saveLocalStorage();
+            renderAll();
+        }
+
+        // DASHBOARD
+        function renderDashboard() {
+            const totalDone = appState.completedTaskIds.length;
+            const grandTotal = baseTasks.length;
+            const percent = Math.round((totalDone / grandTotal) * 100);
+
+            document.getElementById('dashPercentText').textContent = `${percent}%`;
+            document.getElementById('dashCircleProgress').setAttribute('stroke-dasharray', `${percent}, 100`);
+
+            document.getElementById('totalCompletedTasks').textContent = totalDone;
+            document.getElementById('streakDays').textContent = `${appState.streak} ${appState.streak === 1 ? 'Día' : 'Días'}`;
+
+            const msgEl = document.getElementById('dashStatusMsg');
+            if (percent === 0) {
+                msgEl.textContent = "¡Comienza marcando tus tareas para cargar la barra de energía!";
+            } else if (percent < 50) {
+                msgEl.textContent = "¡Buen inicio! Mantén la concentración en tus siguientes bloques.";
+            } else if (percent < 100) {
+                msgEl.textContent = "¡Más de la mitad del día completado! Estás cerca de la meta.";
+            } else {
+                msgEl.textContent = "¡Día 100% completado! Excelente manejo del tiempo.";
+            }
+        }
+
+        // AHORROS
+        function renderSavings() {
+            document.getElementById('savingsBigText').textContent = `$${appState.savings}.00`;
+            const target = 500;
+            const current = appState.savings;
+            const percent = Math.min(100, Math.round((current / target) * 100));
+
+            document.getElementById('savingsTargetText').textContent = `$${current} / $${target}`;
+            document.getElementById('savingsProgressBar').style.width = `${percent}%`;
+        }
+
+        function addSavings(amount) {
+            appState.savings += amount;
+            saveLocalStorage();
+            renderAll();
+            showToast("¡Moneda al chanchito!", `Has guardado $${amount}.00 para tu meta.`);
+        }
+
+        function resetSavingsModal() {
+            const val = prompt("Ingresa el monto de ahorro acumulado actual ($):", appState.savings);
+            if (val !== null && !isNaN(val)) {
+                appState.savings = parseInt(val) || 0;
+                saveLocalStorage();
+                renderAll();
+            }
+        }
+
+        // RECOMPENSAS
+        function renderRewards() {
+            const container = document.getElementById('rewardsList');
+            container.innerHTML = '';
+
+            document.getElementById('specialRewardCounter').textContent = `${appState.claimedRewardsCount} / 4 Metas Canjeadas`;
+
+            rewardsData.forEach(reward => {
+                const canAfford = appState.points >= reward.cost;
+
+                const rewardHtml = `
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-lg shrink-0">
+                                    <i class="fa-solid ${reward.icon}"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">${reward.title}</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5">${reward.desc}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                            <span class="text-sm font-extrabold text-yellow-400 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-xs"></i> ${reward.cost} Pts
+                            </span>
+                            <button onclick="claimReward('${reward.id}', ${reward.cost})" class="px-4 py-2 text-xs font-bold rounded-xl transition-all ${canAfford ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/30 active:scale-95' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+                                ${canAfford ? 'Canjear Premio' : 'Faltan Puntos'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += rewardHtml;
+            });
+        }
+
+        function claimReward(rewardId, cost) {
+            if (appState.points >= cost) {
+                appState.points -= cost;
+                appState.claimedRewardsCount += 1;
+                saveLocalStorage();
+                renderAll();
+
+                if (appState.claimedRewardsCount >= 4) {
+                    showToast("¡DESBLOQUEADO!", "¡Has completado 4 metas! Tienen una SALIDA ESPECIAL disponible.");
+                } else {
+                    showToast("¡Premio Canjeado!", "Presenta esta pantalla a tus papás para disfrutar tu recompensa.");
+                }
+            }
+        }
+
+        // TOAST MOTIVACIONAL TIPO NOTIFICACIÓN
+        function showToast(title, msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = msg;
+
+            toast.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
