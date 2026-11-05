@@ -19,13 +19,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .custom-checkbox input:checked + div {
-            background-color: #10b981;
-            border-color: #10b981;
-        }
-        .custom-checkbox input:checked + div i {
-            display: block;
-        }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -154,8 +147,9 @@
                 </div>
 
                 <div class="glow-card p-4 rounded-2xl space-y-3">
-                    <h3 class="font-bold text-white text-base flex items-center">
-                        <i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico
+                    <h3 class="font-bold text-white text-base flex items-center justify-between">
+                        <span><i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico</span>
+                        <button onclick="resetData()" class="text-[10px] bg-red-500/20 text-red-300 px-2 py-1 rounded hover:bg-red-500/40">Reiniciar App</button>
                     </h3>
                     <div id="history-logs" class="space-y-2 text-xs text-slate-300 max-h-60 overflow-y-auto"></div>
                 </div>
@@ -180,16 +174,28 @@
             { id: 4, title: '🏆 Salida especial (Acumula 4 metas)', cost: 150, icon: 'fa-trophy' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('santiago_quest_state')) || {
-            role: null,
-            points: 0,
-            savings: 0,
-            tasks: DEFAULT_TASKS,
-            history: []
-        };
+        let state = JSON.parse(localStorage.getItem('santiago_quest_state'));
+
+        if (!state || !state.tasks || state.tasks.length === 0) {
+            state = {
+                role: null,
+                points: 0,
+                savings: 0,
+                tasks: DEFAULT_TASKS,
+                history: []
+            };
+            saveState();
+        }
 
         function saveState() {
             localStorage.setItem('santiago_quest_state', JSON.stringify(state));
+        }
+
+        function resetData() {
+            if (confirm('¿Quieres reiniciar todas las tareas y los datos del tablero?')) {
+                localStorage.removeItem('santiago_quest_state');
+                location.reload();
+            }
         }
 
         function handleLogin(e) {
@@ -257,8 +263,8 @@
         }
 
         function renderAll() {
-            document.getElementById('points-display').innerText = state.points;
-            document.getElementById('savings-amount').innerText = `$${state.savings.toFixed(2)}`;
+            document.getElementById('points-display').innerText = state.points || 0;
+            document.getElementById('savings-amount').innerText = `$${(state.savings || 0).toFixed(2)}`;
             renderTasks();
             renderRewards();
             renderHistoryLogs();
@@ -269,6 +275,11 @@
             container.innerHTML = '';
             let completedCount = 0;
 
+            if (!state.tasks || state.tasks.length === 0) {
+                state.tasks = DEFAULT_TASKS;
+                saveState();
+            }
+
             state.tasks.forEach(task => {
                 if (task.done) completedCount++;
 
@@ -276,10 +287,7 @@
                 card.className = `glow-card p-4 rounded-xl flex items-center justify-between border ${task.done ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-slate-800'}`;
                 card.innerHTML = `
                     <div class="flex items-center space-x-3">
-                        <label class="custom-checkbox relative flex items-center justify-center w-6 h-6 rounded-lg border-2 ${task.done ? 'border-emerald-500 bg-emerald-500' : 'border-slate-600'} cursor-pointer">
-                            <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${task.id})" class="sr-only">
-                            <i class="fa-solid fa-check text-white text-xs ${task.done ? 'block' : 'hidden'}"></i>
-                        </label>
+                        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${task.id})" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
                         <div>
                             <p class="text-sm font-semibold ${task.done ? 'line-through text-slate-400' : 'text-white'}">${task.text}</p>
                             <span class="text-[10px] text-slate-400">${task.time}</span>
@@ -312,8 +320,8 @@
         }
 
         function addDailySavings() {
-            state.savings += 50;
-            state.points += 15;
+            state.savings = (state.savings || 0) + 50;
+            state.points = (state.points || 0) + 15;
             logActivity(`Guardó $50.00 en el chanchito (+15 pts bonus)`);
             saveState();
             renderAll();
@@ -357,6 +365,7 @@
         }
 
         function logActivity(detail) {
+            if (!state.history) state.history = [];
             const now = new Date();
             const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
             state.history.unshift({ date: dateStr, detail });
@@ -366,13 +375,15 @@
         function renderHistoryLogs() {
             const container = document.getElementById('history-logs');
             if (!container) return;
-            container.innerHTML = state.history.length === 0 ? '<p class="text-slate-500 text-center py-2">Sin registros de actividad</p>' : '';
-            state.history.forEach(item => {
-                const log = document.createElement('div');
-                log.className = 'bg-slate-900/50 p-2 rounded border border-slate-800/60 flex justify-between';
-                log.innerHTML = `<span>${item.detail}</span><span class="text-slate-500 text-[10px] ml-2">${item.date}</span>`;
-                container.appendChild(log);
-            });
+            container.innerHTML = (!state.history || state.history.length === 0) ? '<p class="text-slate-500 text-center py-2">Sin registros de actividad</p>' : '';
+            if (state.history) {
+                state.history.forEach(item => {
+                    const log = document.createElement('div');
+                    log.className = 'bg-slate-900/50 p-2 rounded border border-slate-800/60 flex justify-between';
+                    log.innerHTML = `<span>${item.detail}</span><span class="text-slate-500 text-[10px] ml-2">${item.date}</span>`;
+                    container.appendChild(log);
+                });
+            }
         }
 
         function renderAdminChart() {
@@ -405,4 +416,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
