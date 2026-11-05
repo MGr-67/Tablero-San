@@ -9,15 +9,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background-color: #0f172a;
+            background-color: #0b0f19;
             color: #f8fafc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .glow-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: rgba(20, 27, 45, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
@@ -52,8 +52,8 @@
     <!-- APP PRINCIPAL -->
     <div id="app-content" class="hidden">
         <!-- HEADER -->
-        <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-3">
-            <div class="max-w-md mx-auto flex items-center justify-between">
+        <header class="sticky top-0 z-40 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 px-6 py-3">
+            <div class="max-w-5xl mx-auto flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
                         <i class="fa-solid fa-user-astronaut"></i>
@@ -63,10 +63,10 @@
                         <span id="role-badge" class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-medium">Modo Jugador</span>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 rounded-xl text-xs font-bold flex items-center space-x-1">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold flex items-center space-x-1">
                         <i class="fa-solid fa-star text-amber-400"></i>
-                        <span id="points-display">0</span> pts
+                        <span id="points-display">0</span> Pts
                     </div>
                     <button onclick="logout()" class="text-slate-400 hover:text-white p-2">
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -75,30 +75,34 @@
             </div>
         </header>
 
-        <!-- NAVEGACIÓN PRINCIPAL -->
-        <nav class="max-w-md mx-auto px-4 mt-4">
-            <div class="grid grid-cols-3 gap-2 bg-slate-900/60 p-1 rounded-xl border border-slate-800 text-xs">
-                <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2 rounded-lg font-medium text-center bg-indigo-600 text-white transition">
-                    <i class="fa-solid fa-list-check mb-1 block text-sm"></i> Rutina
+        <!-- NAVEGACIÓN PRINCIPAL HORIZONTAL (ESTILO ORIGINAL) -->
+        <nav class="max-w-5xl mx-auto px-6 mt-6">
+            <div class="flex flex-wrap gap-3 border-b border-slate-800/60 pb-3">
+                <button onclick="switchTab('tasks')" id="tab-tasks" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Actividades de Hoy</span>
                 </button>
-                <button onclick="switchTab('piggy')" id="tab-piggy" class="py-2 rounded-lg font-medium text-center text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-piggy-bank mb-1 block text-sm"></i> Ahorro
+                <button onclick="switchTab('piggy')" id="tab-piggy" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Mi Chanchito</span>
                 </button>
-                <button onclick="switchTab('rewards')" id="tab-rewards" class="py-2 rounded-lg font-medium text-center text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-gift mb-1 block text-sm"></i> Premios
+                <button onclick="switchTab('rewards')" id="tab-rewards" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-gift"></i>
+                    <span>Recompensas</span>
                 </button>
-                <button onclick="switchTab('admin')" id="tab-admin" class="hidden col-span-3 py-2 rounded-lg font-medium text-center bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 transition mt-1">
-                    <i class="fa-solid fa-chart-line mr-1"></i> 📊 Histórico y Métricas (Padres)
+                <button onclick="switchTab('admin')" id="tab-admin" class="hidden px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>📊 Histórico y Métricas (Padres)</span>
                 </button>
             </div>
         </nav>
 
-        <!-- SECCIONES -->
-        <main class="max-w-md mx-auto px-4 mt-4 space-y-4">
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="max-w-5xl mx-auto px-6 mt-6 space-y-6">
 
-            <!-- SECCIÓN 1: RUTINAS / TAREAS -->
-            <div id="section-tasks" class="space-y-4">
-                <div class="glow-card p-4 rounded-2xl flex items-center justify-between border-l-4 border-indigo-500">
+            <!-- SECCIÓN TAREAS -->
+            <div id="section-tasks" class="hidden space-y-4">
+                <div class="glow-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-indigo-500">
                     <div>
                         <p class="text-xs text-slate-400">Progreso del Día</p>
                         <h3 id="progress-text" class="text-lg font-bold text-white">0 de 5 tareas</h3>
@@ -111,15 +115,15 @@
                 <div class="space-y-3" id="tasks-container"></div>
             </div>
 
-            <!-- SECCIÓN 2: AHORRO DE $50 -->
-            <div id="section-piggy" class="hidden space-y-4">
-                <div class="glow-card p-5 rounded-2xl text-center space-y-3 border-l-4 border-emerald-500">
+            <!-- SECCIÓN AHORRO -->
+            <div id="section-piggy" class="hidden space-y-4 max-w-xl mx-auto">
+                <div class="glow-card p-6 rounded-2xl text-center space-y-4 border-l-4 border-emerald-500">
                     <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
                         <i class="fa-solid fa-coins"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-white">Mi Chanchito</h3>
-                        <p class="text-xs text-slate-400">¡Guarda tus $50.00 de lunch para tu salida especial!</p>
+                        <p class="text-xs text-slate-400 mt-1">¡Guarda tus $50.00 de lunch para tu salida especial!</p>
                     </div>
                     <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                         <p class="text-xs text-slate-400">Ahorro Total Acumulado</p>
@@ -132,26 +136,52 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: PREMIOS -->
-            <div id="section-rewards" class="hidden space-y-3"></div>
+            <!-- SECCIÓN RECOMPENSAS (RESTAURADA EN 2 COLUMNAS) -->
+            <div id="section-rewards" class="space-y-6">
+                <!-- BANNER RECOMPENSAS -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glow-card p-6 rounded-2xl border-l-4 border-indigo-500">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-store text-indigo-400 mr-2.5"></i> Tienda de Recompensas
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Canjea tus puntos ganados por premios reales para compartir en familia.</p>
+                    </div>
+                    <div class="bg-indigo-950/60 border border-indigo-500/30 p-3 px-4 rounded-xl flex items-center space-x-3 shrink-0">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-600/30 text-indigo-300 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-indigo-300 tracking-wider block">Avance Salida Especial</span>
+                            <span id="meta-counter" class="text-sm font-bold text-white">0 / 4 Metas Canjeadas</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- SECCIÓN 4: HISTÓRICO Y ANALÍTICAS (PADRES) -->
+                <!-- CUADRÍCULA DE PREMIOS EN 2 COLUMNAS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rewards-grid">
+                    <!-- Tarjetas generadas dinámicamente -->
+                </div>
+            </div>
+
+            <!-- SECCIÓN PADRES / HISTÓRICO -->
             <div id="section-admin" class="hidden space-y-4">
-                <div class="glow-card p-4 rounded-2xl space-y-4">
+                <div class="glow-card p-5 rounded-2xl space-y-4">
                     <h3 class="font-bold text-white text-base flex items-center">
                         <i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i> Cumplimiento Semanal
                     </h3>
-                    <div class="h-48">
+                    <div class="h-56">
                         <canvas id="weeklyChart"></canvas>
                     </div>
                 </div>
 
-                <div class="glow-card p-4 rounded-2xl space-y-3">
-                    <h3 class="font-bold text-white text-base flex items-center justify-between">
-                        <span><i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico</span>
-                        <button onclick="resetData()" class="text-[10px] bg-red-500/20 text-red-300 px-2 py-1 rounded hover:bg-red-500/40">Reiniciar App</button>
-                    </h3>
-                    <div id="history-logs" class="space-y-2 text-xs text-slate-300 max-h-60 overflow-y-auto"></div>
+                <div class="glow-card p-5 rounded-2xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-white text-base flex items-center">
+                            <i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-2"></i> Registro Histórico de Compromiso
+                        </h3>
+                        <button onclick="resetData()" class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-lg hover:bg-red-500/40 transition">Reiniciar App</button>
+                    </div>
+                    <div id="history-logs" class="space-y-2 text-xs text-slate-300 max-h-60 overflow-y-auto pt-2"></div>
                 </div>
             </div>
 
@@ -168,10 +198,10 @@
         ];
 
         const DEFAULT_REWARDS = [
-            { id: 1, title: '🎬 Ver película juntos', cost: 40, icon: 'fa-film' },
-            { id: 2, title: '🎲 Elegir juego de mesa', cost: 30, icon: 'fa-chess' },
-            { id: 3, title: '🍦 Postre especial elegido por ti', cost: 50, icon: 'fa-ice-cream' },
-            { id: 4, title: '🏆 Salida especial (Acumula 4 metas)', cost: 150, icon: 'fa-trophy' }
+            { id: 1, title: 'Noche de Película Juntos', desc: 'Tú eliges la película y las palomitas', cost: 50, icon: 'fa-film' },
+            { id: 2, title: 'Elegir la Cita/Salida Familiar', desc: 'Tú decides a dónde vamos este fin de semana', cost: 80, icon: 'fa-map-location-dot' },
+            { id: 3, title: 'Noche de Juegos de Mesa', desc: 'Tú eliges cuál juego jugaremos todos', cost: 40, icon: 'fa-dice' },
+            { id: 4, title: 'Tiempo Extra de Videojuegos (30 min)', desc: 'Treinta minutos adicionales de consola o PC', cost: 60, icon: 'fa-gamepad' }
         ];
 
         let state = JSON.parse(localStorage.getItem('santiago_quest_state'));
@@ -181,6 +211,7 @@
                 role: null,
                 points: 0,
                 savings: 0,
+                claimedMetas: 0,
                 tasks: DEFAULT_TASKS,
                 history: []
             };
@@ -249,14 +280,14 @@
                 const btn = document.getElementById(`tab-${t}`);
                 if (sec) sec.classList.add('hidden');
                 if (btn && t !== 'admin') {
-                    btn.className = 'py-2 rounded-lg font-medium text-center text-slate-400 hover:text-white transition';
+                    btn.className = 'px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-slate-800/60 text-slate-300 hover:text-white';
                 }
             });
 
             document.getElementById(`section-${tab}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-${tab}`);
             if (activeBtn && tab !== 'admin') {
-                activeBtn.className = 'py-2 rounded-lg font-medium text-center bg-indigo-600 text-white transition';
+                activeBtn.className = 'px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30';
             }
 
             if (tab === 'admin') renderAdminChart();
@@ -265,6 +296,7 @@
         function renderAll() {
             document.getElementById('points-display').innerText = state.points || 0;
             document.getElementById('savings-amount').innerText = `$${(state.savings || 0).toFixed(2)}`;
+            document.getElementById('meta-counter').innerText = `${state.claimedMetas || 0} / 4 Metas Canjeadas`;
             renderTasks();
             renderRewards();
             renderHistoryLogs();
@@ -329,26 +361,29 @@
         }
 
         function renderRewards() {
-            const container = document.getElementById('section-rewards');
+            const container = document.getElementById('rewards-grid');
             container.innerHTML = '';
 
             DEFAULT_REWARDS.forEach(reward => {
                 const canAfford = state.points >= reward.cost;
                 const card = document.createElement('div');
-                card.className = 'glow-card p-4 rounded-xl flex items-center justify-between border border-slate-800';
+                card.className = 'glow-card p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between space-y-4';
                 card.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-lg">
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl shrink-0 mt-0.5">
                             <i class="fa-solid ${reward.icon}"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-white">${reward.title}</p>
-                            <span class="text-xs text-amber-400 font-bold">${reward.cost} Puntos</span>
+                            <h4 class="text-sm font-bold text-white">${reward.title}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">${reward.desc}</p>
                         </div>
                     </div>
-                    <button onclick="claimReward('${reward.title}', ${reward.cost})" ${!canAfford ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-95' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
-                        Canjear
-                    </button>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
+                        <span class="text-sm font-bold text-amber-400">★ ${reward.cost} Pts</span>
+                        <button onclick="claimReward('${reward.title}', ${reward.cost})" ${!canAfford ? 'disabled' : ''} class="px-4 py-2 rounded-xl text-xs font-bold transition ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg active:scale-95' : 'bg-slate-800/80 text-slate-500 cursor-not-allowed'}">
+                            ${canAfford ? 'Canjear Premio' : 'Faltan Puntos'}
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -357,6 +392,7 @@
         function claimReward(title, cost) {
             if (state.points >= cost) {
                 state.points -= cost;
+                state.claimedMetas = (state.claimedMetas || 0) + 1;
                 logActivity(`Canjeó la recompensa: "${title}" (-${cost} pts)`);
                 saveState();
                 renderAll();
@@ -379,7 +415,7 @@
             if (state.history) {
                 state.history.forEach(item => {
                     const log = document.createElement('div');
-                    log.className = 'bg-slate-900/50 p-2 rounded border border-slate-800/60 flex justify-between';
+                    log.className = 'bg-slate-900/50 p-2.5 rounded-lg border border-slate-800/60 flex justify-between';
                     log.innerHTML = `<span>${item.detail}</span><span class="text-slate-500 text-[10px] ml-2">${item.date}</span>`;
                     container.appendChild(log);
                 });
