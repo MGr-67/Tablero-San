@@ -162,10 +162,9 @@
                 <div id="blocks-container" class="space-y-6"></div>
             </div>
 
-            <!-- SECCIÓN MI PROGRESO DINÁMICA -->
+            <!-- SECCIÓN MI PROGRESO -->
             <div id="section-progress" class="hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- TARJETA IZQUIERDA: CUMPLIMIENTO GLOBAL -->
                     <div class="glow-card p-6 rounded-2xl border border-slate-800 flex flex-col items-center justify-between text-center space-y-6">
                         <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Cumplimiento Global de Hoy</h4>
                         <div class="relative w-40 h-40 flex items-center justify-center">
@@ -183,9 +182,7 @@
                         </div>
                     </div>
 
-                    <!-- TARJETA DERECHA: METRICAS -->
                     <div class="space-y-4 flex flex-col justify-between">
-                        <!-- RACHA -->
                         <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
@@ -199,7 +196,6 @@
                             <span id="streak-days" class="text-xl font-black text-amber-400">1 Día</span>
                         </div>
 
-                        <!-- METAS CUMPLIDAS -->
                         <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
@@ -213,7 +209,6 @@
                             <span id="completed-tasks-count" class="text-xl font-black text-indigo-400">0</span>
                         </div>
 
-                        <!-- SALUD MENTAL -->
                         <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
@@ -245,7 +240,6 @@
                         <p id="savings-amount" class="text-3xl font-extrabold text-emerald-400 mt-1">$0.00</p>
                     </div>
 
-                    <!-- BOTONES AHORRAR Y AJUSTAR -->
                     <div class="flex items-center space-x-3">
                         <button onclick="addDailySavings(50)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-plus-circle"></i>
@@ -257,7 +251,6 @@
                     </div>
                 </div>
 
-                <!-- META SALIDA ESPECIAL DE $2,000.00 -->
                 <div class="glow-card p-5 rounded-2xl space-y-3 border border-slate-800">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-bold text-white flex items-center">
@@ -271,7 +264,7 @@
                     <p class="text-[11px] text-slate-400">Al llegar a <span class="text-emerald-400 font-bold">$2,000</span> de ahorro personal, ¡podrás desbloquear un pase directo a la gran Salida Especial!</p>
                 </div>
 
-                <!-- TABLA DE PRÉSTAMOS / DEDUCCIONES -->
+                <!-- TABLA DE PRÉSTAMOS CON CHECKLIST PARA LIQUIDACIÓN -->
                 <div class="glow-card p-5 rounded-2xl space-y-4 border border-slate-800">
                     <div class="flex items-center justify-between">
                         <h4 class="text-sm font-bold text-white flex items-center">
@@ -285,6 +278,7 @@
                         <table class="w-full text-xs text-left text-slate-300">
                             <thead class="bg-slate-900/80 text-slate-400 font-semibold border-b border-slate-800">
                                 <tr>
+                                    <th class="p-2 text-center">Pagado</th>
                                     <th class="p-2">Concepto / Motivo</th>
                                     <th class="p-2">Monto</th>
                                     <th class="p-2">Persona</th>
@@ -293,7 +287,7 @@
                             </thead>
                             <tbody id="loans-table-body">
                                 <tr>
-                                    <td colspan="4" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td>
+                                    <td colspan="5" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -301,7 +295,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN RECOMPENSAS -->
+            <!-- SECCIÓN RECOMPENSAS (REMPLAZO A MATERIAL DE ESCULTURAS) -->
             <div id="section-rewards" class="hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glow-card p-6 rounded-2xl border-l-4 border-indigo-500">
                     <div>
@@ -324,7 +318,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rewards-grid"></div>
             </div>
 
-            <!-- SECCIÓN ADMIN (PADRES) -->
+            <!-- SECCIÓN ADMIN -->
             <div id="section-admin" class="hidden space-y-4">
                 <div class="glow-card p-5 rounded-2xl space-y-4">
                     <h3 class="font-bold text-white text-base flex items-center">
@@ -391,10 +385,10 @@
             { id: 1, title: 'Noche de Película Juntos', desc: 'Tú eliges la película y las palomitas', cost: 50, icon: 'fa-film' },
             { id: 2, title: 'Elegir la Cita/Salida Familiar', desc: 'Tú decides a dónde vamos este fin de semana', cost: 80, icon: 'fa-map-location-dot' },
             { id: 3, title: 'Noche de Juegos de Mesa', desc: 'Tú eliges cuál juego jugaremos todos', cost: 40, icon: 'fa-dice' },
-            { id: 4, title: 'Tiempo Extra de Videojuegos (30 min)', desc: 'Treinta minutos adicionales de consola o PC', cost: 60, icon: 'fa-gamepad' }
+            { id: 4, title: 'Material para Esculturas', desc: 'Kit o insumos para tus proyectos de escultura y arte', cost: 60, icon: 'fa-palette' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('santiago_quest_state_v2'));
+        let state = JSON.parse(localStorage.getItem('santiago_quest_state_v3'));
 
         if (!state) {
             state = {
@@ -411,12 +405,12 @@
         }
 
         function saveState() {
-            localStorage.setItem('santiago_quest_state_v2', JSON.stringify(state));
+            localStorage.setItem('santiago_quest_state_v3', JSON.stringify(state));
         }
 
         function resetData() {
             if (confirm('¿Quieres reiniciar el tablero a su estado original?')) {
-                localStorage.removeItem('santiago_quest_state_v2');
+                localStorage.removeItem('santiago_quest_state_v3');
                 location.reload();
             }
         }
@@ -490,7 +484,6 @@
             document.getElementById('savings-amount').innerText = `$${(state.savings || 0).toFixed(2)}`;
             document.getElementById('meta-counter').innerText = `${state.claimedMetas || 0} / 4 Metas Canjeadas`;
 
-            // METAS AHORRO $2000
             const metaSavings = Math.min(2000, Math.max(0, state.savings || 0));
             const metaPercent = Math.round((metaSavings / 2000) * 100);
             document.getElementById('meta-savings-text').innerText = `$${(state.savings || 0).toFixed(2)} / $2,000`;
@@ -630,6 +623,88 @@
             }
         }
 
+        // AHORRO SIN BONO DE PUNTOS
+        function addDailySavings(amount) {
+            state.savings = (state.savings || 0) + amount;
+            logActivity(`Guardó $${amount.toFixed(2)} en el chanchito`);
+            saveState();
+            renderAll();
+            alert(`¡Excelente! Guardaste $${amount.toFixed(2)} en tu ahorro.`);
+        }
+
+        function customSavings() {
+            const val = prompt("Ingresa el monto a ingresar al chanchito ($):", "50.00");
+            if (val !== null) {
+                const amount = parseFloat(val);
+                if (!isNaN(amount) && amount > 0) {
+                    addDailySavings(amount);
+                }
+            }
+        }
+
+        function addLoan() {
+            const concept = prompt("Motivo o concepto del préstamo/deducción:");
+            if (!concept) return;
+            const amountVal = prompt("Monto a descontar ($):");
+            const amount = parseFloat(amountVal);
+            if (isNaN(amount) || amount <= 0) return;
+            const person = prompt("Persona a quien se presta / paga:", "Santiago");
+            const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+            if (!state.loans) state.loans = [];
+            state.loans.unshift({ id: Date.now(), concept, amount, person, date: dateStr, paid: false });
+            state.savings = Math.max(0, (state.savings || 0) - amount);
+
+            logActivity(`Préstamo/Deducción: $${amount.toFixed(2)} (${concept})`);
+            saveState();
+            renderAll();
+        }
+
+        // CHECKLIST PARA LIQUIDAR PRÉSTAMO Y SUMAR AL AHORRO ACUMULADO
+        function toggleLoanPaid(loanId) {
+            const loan = state.loans.find(l => l.id === loanId);
+            if (loan) {
+                loan.paid = !loan.paid;
+                if (loan.paid) {
+                    state.savings += loan.amount;
+                    logActivity(`Préstamo devuelto: +$${loan.amount.toFixed(2)} (${loan.concept})`);
+                } else {
+                    state.savings = Math.max(0, state.savings - loan.amount);
+                    logActivity(`Revertido pago de préstamo: -$${loan.amount.toFixed(2)} (${loan.concept})`);
+                }
+                saveState();
+                renderAll();
+            }
+        }
+
+        function renderLoans() {
+            const tbody = document.getElementById('loans-table-body');
+            if (!tbody) return;
+
+            if (!state.loans || state.loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            state.loans.forEach(loan => {
+                const tr = document.createElement('tr');
+                tr.className = `border-b border-slate-800/60 ${loan.paid ? 'bg-emerald-950/20' : 'hover:bg-slate-900/40'}`;
+                tr.innerHTML = `
+                    <td class="p-2 text-center">
+                        <button onclick="toggleLoanPaid(${loan.id})" class="checkbox-gamer ${loan.paid ? 'checked' : ''} mx-auto">
+                            ${loan.paid ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </button>
+                    </td>
+                    <td class="p-2 font-semibold ${loan.paid ? 'line-through text-slate-500' : 'text-white'}">${loan.concept}</td>
+                    <td class="p-2 font-bold ${loan.paid ? 'text-emerald-400' : 'text-red-400'}">${loan.paid ? '+$' : '-$'}${loan.amount.toFixed(2)}</td>
+                    <td class="p-2 text-slate-300">${loan.person}</td>
+                    <td class="p-2 text-slate-500">${loan.date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function renderProgressTab() {
             let totalSlots = 0;
             let completedSlots = 0;
@@ -661,66 +736,6 @@
             } else {
                 motivText.innerText = "¡Impresionante! 100% completado. ¡Eres un crack!";
             }
-        }
-
-        function addDailySavings(amount) {
-            state.savings = (state.savings || 0) + amount;
-            state.points = (state.points || 0) + 15;
-            logActivity(`Guardó $${amount.toFixed(2)} en el chanchito (+15 pts bonus)`);
-            saveState();
-            renderAll();
-            alert(`¡Excelente! Guardaste $${amount.toFixed(2)} en tu ahorro y ganaste +15 puntos extra.`);
-        }
-
-        function customSavings() {
-            const val = prompt("Ingresa el monto a ingresar al chanchito ($):", "50.00");
-            if (val !== null) {
-                const amount = parseFloat(val);
-                if (!isNaN(amount) && amount > 0) {
-                    addDailySavings(amount);
-                }
-            }
-        }
-
-        function addLoan() {
-            const concept = prompt("Motivo o concepto del préstamo/deducción:");
-            if (!concept) return;
-            const amountVal = prompt("Monto a descontar ($):");
-            const amount = parseFloat(amountVal);
-            if (isNaN(amount) || amount <= 0) return;
-            const person = prompt("Persona a quien se presta / paga:", "Santiago");
-            const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' });
-
-            if (!state.loans) state.loans = [];
-            state.loans.unshift({ concept, amount, person, date: dateStr });
-            state.savings = Math.max(0, (state.savings || 0) - amount);
-
-            logActivity(`Préstamo/Deducción: $${amount.toFixed(2)} (${concept})`);
-            saveState();
-            renderAll();
-        }
-
-        function renderLoans() {
-            const tbody = document.getElementById('loans-table-body');
-            if (!tbody) return;
-
-            if (!state.loans || state.loans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '';
-            state.loans.forEach(loan => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-slate-800/60 hover:bg-slate-900/40';
-                tr.innerHTML = `
-                    <td class="p-2 font-semibold text-white">${loan.concept}</td>
-                    <td class="p-2 text-red-400 font-bold">-$${loan.amount.toFixed(2)}</td>
-                    <td class="p-2 text-slate-300">${loan.person}</td>
-                    <td class="p-2 text-slate-500">${loan.date}</td>
-                `;
-                tbody.appendChild(tr);
-            });
         }
 
         function renderRewards() {
