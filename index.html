@@ -20,21 +20,25 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
         .checkbox-gamer {
-            width: 28px;
-            height: 28px;
-            background: rgba(15, 23, 42, 0.8);
+            width: 26px;
+            height: 26px;
+            background: rgba(15, 23, 42, 0.9);
             border: 2px solid #334155;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            font-size: 10px;
+            font-weight: bold;
+            color: #64748b;
         }
         .checkbox-gamer.checked {
             background: #10b981;
             border-color: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
     </style>
 </head>
@@ -59,8 +63,8 @@
             </div>
             
             <div class="pt-2 border-t border-slate-800 text-xs text-slate-500 space-y-1">
-                <p>🔑 Santiago: <span class="text-indigo-400 font-mono"></span></p>
-                <p>🔒 Admin / Padres: <span class="text-emerald-400 font-mono"></span></p>
+                <p>🔑 Santiago: <span class="text-indigo-400 font-mono">1234</span></p>
+                <p>🔒 Admin / Padres: <span class="text-emerald-400 font-mono">9999</span></p>
             </div>
             <p id="login-error" class="text-red-400 text-xs hidden">PIN Incorrecto. Intenta de nuevo.</p>
         </form>
@@ -92,7 +96,7 @@
             </div>
         </header>
 
-        <!-- NAVEGACIÓN HORIZONTAL (VERSIÓN 1 ORIGINAL) -->
+        <!-- NAVEGACIÓN -->
         <nav class="max-w-5xl mx-auto px-6 mt-6">
             <div class="flex flex-wrap gap-3 border-b border-slate-800/60 pb-3">
                 <button onclick="switchTab('tasks')" id="tab-tasks" class="px-5 py-2.5 rounded-xl font-semibold text-xs transition flex items-center space-x-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
@@ -121,9 +125,9 @@
         <!-- MAIN -->
         <main class="max-w-5xl mx-auto px-6 mt-6 space-y-6">
 
-            <!-- SECCIÓN TAREAS -->
+            <!-- SECCIÓN ACTIVIDADES -->
             <div id="section-tasks" class="space-y-6">
-                <!-- RECUADRO "OBJETIVO DEL DÍA" ORIGINAL -->
+                <!-- OBJETIVO DEL DÍA DINÁMICO -->
                 <div class="glow-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-indigo-500">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl shrink-0">
@@ -131,7 +135,7 @@
                         </div>
                         <div>
                             <h3 class="text-base font-bold text-white">Objetivo del día</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">¡Paso a paso se llega lejos! Vamos por la siguiente tarea.</p>
+                            <p id="objective-subtext" class="text-xs text-slate-400 mt-0.5">¡Paso a paso se llega lejos! Vamos por la siguiente tarea.</p>
                         </div>
                     </div>
                     <div class="text-right">
@@ -140,42 +144,164 @@
                     </div>
                 </div>
 
-                <!-- CONTENEDOR DE BLOQUES MAÑANA / TARDE / NOCHE -->
+                <!-- CASILLA ESPECIAL DE HIGIENE PERSONAL -->
+                <div class="glow-card p-4 rounded-xl border border-indigo-500/30 flex items-center justify-between bg-indigo-950/20">
+                    <div class="flex items-center space-x-3">
+                        <div id="hygiene-btn" onclick="toggleHygiene()" class="checkbox-gamer">
+                            <i class="fa-solid fa-sparkles text-amber-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">🪥 Revisión de Higiene Personal</h4>
+                            <p class="text-[11px] text-slate-400">Dientes, manos y aseo impecable antes de iniciar el bloque</p>
+                        </div>
+                    </div>
+                    <span class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-500/20">+5 pts</span>
+                </div>
+
+                <!-- CONTENEDOR DE BLOQUES -->
                 <div id="blocks-container" class="space-y-6"></div>
             </div>
 
-            <!-- SECCIÓN MI PROGRESO -->
+            <!-- SECCIÓN MI PROGRESO DINÁMICA -->
             <div id="section-progress" class="hidden space-y-6">
-                <div class="glow-card p-6 rounded-2xl border-l-4 border-indigo-500 space-y-4">
-                    <h3 class="text-lg font-bold text-white flex items-center">
-                        <i class="fa-solid fa-trophy text-amber-400 mr-2.5"></i> Resumen de Logros
-                    </h3>
-                    <p class="text-xs text-slate-400">Continúa completando tus actividades para ganar más puntos y desbloquear tus recompensas.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- TARJETA IZQUIERDA: CUMPLIMIENTO GLOBAL -->
+                    <div class="glow-card p-6 rounded-2xl border border-slate-800 flex flex-col items-center justify-between text-center space-y-6">
+                        <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Cumplimiento Global de Hoy</h4>
+                        <div class="relative w-40 h-40 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path id="progress-svg-circle" class="text-indigo-500 transition-all duration-700 ease-out" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="progress-circle-percent" class="text-3xl font-black text-white">0%</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">Completado</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-xs text-slate-400" id="progress-motivation-text">
+                            ¡Comienza marcando tus tareas para cargar la barra de energía!
+                        </div>
+                    </div>
+
+                    <!-- TARJETA DERECHA: METRICAS -->
+                    <div class="space-y-4 flex flex-col justify-between">
+                        <!-- RACHA -->
+                        <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-fire"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Racha Activa</h4>
+                                    <p class="text-xs text-slate-400">Días seguidos cumpliendo metas</p>
+                                </div>
+                            </div>
+                            <span id="streak-days" class="text-xl font-black text-amber-400">1 Día</span>
+                        </div>
+
+                        <!-- METAS CUMPLIDAS -->
+                        <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-award"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Metas Cumplidas</h4>
+                                    <p class="text-xs text-slate-400">Total de tareas logradas</p>
+                                </div>
+                            </div>
+                            <span id="completed-tasks-count" class="text-xl font-black text-indigo-400">0</span>
+                        </div>
+
+                        <!-- SALUD MENTAL -->
+                        <div class="glow-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Salud Mental & Enfoque</h4>
+                                    <p class="text-xs text-slate-400">Nivel de sobrecarga actual</p>
+                                </div>
+                            </div>
+                            <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-500/30">ÓPTIMO</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- SECCIÓN MI CHANCHITO -->
-            <div id="section-piggy" class="hidden space-y-6 max-w-xl mx-auto">
+            <div id="section-piggy" class="hidden space-y-6 max-w-2xl mx-auto">
                 <div class="glow-card p-6 rounded-2xl text-center space-y-4 border-l-4 border-emerald-500">
                     <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
-                        <i class="fa-solid fa-coins"></i>
+                        <i class="fa-solid fa-piggy-bank"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-white">Mi Chanchito</h3>
-                        <p class="text-xs text-slate-400 mt-1">¡Guarda tus $50.00 de lunch para tu salida especial!</p>
+                        <h3 class="text-xl font-bold text-white">Mi Chanchito de Ahorros</h3>
+                        <p class="text-xs text-slate-400 mt-1">Cada día recibes tu dinero de lunch. Si ahorras y comes bien en el comedor, ¡agrega tu dinero al chanchito!</p>
                     </div>
                     <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
-                        <p class="text-xs text-slate-400">Ahorro Total Acumulado</p>
+                        <p class="text-xs text-slate-400">AHORRO TOTAL ACUMULADO</p>
                         <p id="savings-amount" class="text-3xl font-extrabold text-emerald-400 mt-1">$0.00</p>
                     </div>
-                    <button onclick="addDailySavings()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-plus-circle"></i>
-                        <span>¡Guardar mis $50 de hoy!</span>
-                    </button>
+
+                    <!-- BOTONES AHORRAR Y AJUSTAR -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="addDailySavings(50)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span>Ahorrar $50 de Hoy</span>
+                        </button>
+                        <button onclick="customSavings()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-5 py-3 rounded-xl transition">
+                            Ajustar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- META SALIDA ESPECIAL DE $2,000.00 -->
+                <div class="glow-card p-5 rounded-2xl space-y-3 border border-slate-800">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-white flex items-center">
+                            <i class="fa-solid fa-bullseye text-emerald-400 mr-2"></i> Meta de Ahorro para Salida Especial
+                        </span>
+                        <span id="meta-savings-text" class="text-slate-400 font-mono">$0 / $2,000</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
+                        <div id="meta-savings-bar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Al llegar a <span class="text-emerald-400 font-bold">$2,000</span> de ahorro personal, ¡podrás desbloquear un pase directo a la gran Salida Especial!</p>
+                </div>
+
+                <!-- TABLA DE PRÉSTAMOS / DEDUCCIONES -->
+                <div class="glow-card p-5 rounded-2xl space-y-4 border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-bold text-white flex items-center">
+                            <i class="fa-solid fa-receipt text-amber-400 mr-2"></i> Préstamos y Deducciones
+                        </h4>
+                        <button onclick="addLoan()" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-lg hover:bg-amber-500/40">
+                            + Registrar Préstamo
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-300">
+                            <thead class="bg-slate-900/80 text-slate-400 font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2">Concepto / Motivo</th>
+                                    <th class="p-2">Monto</th>
+                                    <th class="p-2">Persona</th>
+                                    <th class="p-2">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loans-table-body">
+                                <tr>
+                                    <td colspan="4" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN RECOMPENSAS (2 COLUMNAS ORIGINAL) -->
+            <!-- SECCIÓN RECOMPENSAS -->
             <div id="section-rewards" class="hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glow-card p-6 rounded-2xl border-l-4 border-indigo-500">
                     <div>
@@ -224,6 +350,8 @@
     </div>
 
     <script>
+        const DAYS = ['L', 'M', 'X', 'J', 'V'];
+
         const ROUTINE_BLOCKS = [
             {
                 id: 'morning',
@@ -231,7 +359,7 @@
                 time: '(05:30 - 06:35)',
                 icon: 'fa-sun text-amber-400',
                 tasks: [
-                    { id: 101, title: 'Alistarme y Desayuno Rápido', time: '05:30 - 06:10', pts: 10, done: false }
+                    { id: 101, title: 'Alistarme y Desayuno Rápido', time: '05:30 - 06:10', pts: 10, daysDone: [false, false, false, false, false] }
                 ]
             },
             {
@@ -240,20 +368,21 @@
                 time: '(15:40 - 20:00)',
                 icon: 'fa-cloud-sun text-sky-400',
                 tasks: [
-                    { id: 201, title: 'Comedor y Salida de Escuela', time: '14:00 - 15:40', pts: 10, done: false },
-                    { id: 202, title: 'Natación (Solo M y J) / Descanso Táctico', time: '16:00 - 17:00', badge: 'M/J Natación', pts: 15, done: false },
-                    { id: 203, title: 'Bloque 1 Tarea Escolar (45 min sin distracciones)', time: '18:00 - 19:00', pts: 20, done: false },
-                    { id: 204, title: 'Clase de Inglés Online (L, M, V) / Baño y Aseo (M, J)', time: '19:00 - 20:00', pts: 15, done: false }
+                    { id: 201, title: 'Comedor y Salida de Escuela', time: '14:00 - 15:40', pts: 10, daysDone: [false, false, false, false, false] },
+                    { id: 202, title: 'Natación (Solo M y J) / Descanso Táctico', time: '16:00 - 17:00', badge: 'M/J Natación', pts: 15, daysDone: [false, false, false, false, false] },
+                    { id: 203, title: 'Bloque 1 Tarea Escolar (45 min sin distracciones)', time: '18:00 - 19:00', pts: 20, daysDone: [false, false, false, false, false] },
+                    { id: 204, title: 'Clase de Inglés Online (L, M, V) / Baño y Aseo (M, J)', time: '19:00 - 20:00', pts: 15, daysDone: [false, false, false, false, false] }
                 ]
             },
             {
                 id: 'night',
                 title: 'BLOQUE NOCHE',
-                time: '(20:00 - 22:00)',
+                time: '(20:00 - 21:30)',
                 icon: 'fa-moon text-indigo-400',
                 tasks: [
-                    { id: 301, title: 'Cena Familiar y Charla Rápida', time: '20:00 - 20:45', pts: 10, done: false },
-                    { id: 302, title: 'Organizar Mochila + Uniforme del Día Siguiente', time: '20:45 - 21:15', pts: 15, done: false }
+                    { id: 301, title: 'Cena en Familia', time: '20:00 - 20:40', pts: 10, daysDone: [false, false, false, false, false] },
+                    { id: 302, title: 'Revisar mochila, guardar materiales y uniforme', time: '20:40 - 21:10', pts: 15, daysDone: [false, false, false, false, false] },
+                    { id: 303, title: 'Viento en Calma: Desconexión y a Dormir', time: '21:10 - 21:30', pts: 10, daysDone: [false, false, false, false, false] }
                 ]
             }
         ];
@@ -265,7 +394,7 @@
             { id: 4, title: 'Tiempo Extra de Videojuegos (30 min)', desc: 'Treinta minutos adicionales de consola o PC', cost: 60, icon: 'fa-gamepad' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('santiago_quest_state_v1'));
+        let state = JSON.parse(localStorage.getItem('santiago_quest_state_v2'));
 
         if (!state) {
             state = {
@@ -273,19 +402,21 @@
                 points: 0,
                 savings: 0,
                 claimedMetas: 0,
+                hygieneDone: false,
                 blocks: ROUTINE_BLOCKS,
+                loans: [],
                 history: []
             };
             saveState();
         }
 
         function saveState() {
-            localStorage.setItem('santiago_quest_state_v1', JSON.stringify(state));
+            localStorage.setItem('santiago_quest_state_v2', JSON.stringify(state));
         }
 
         function resetData() {
             if (confirm('¿Quieres reiniciar el tablero a su estado original?')) {
-                localStorage.removeItem('santiago_quest_state_v1');
+                localStorage.removeItem('santiago_quest_state_v2');
                 location.reload();
             }
         }
@@ -358,40 +489,82 @@
             document.getElementById('points-display').innerText = state.points || 0;
             document.getElementById('savings-amount').innerText = `$${(state.savings || 0).toFixed(2)}`;
             document.getElementById('meta-counter').innerText = `${state.claimedMetas || 0} / 4 Metas Canjeadas`;
+
+            // METAS AHORRO $2000
+            const metaSavings = Math.min(2000, Math.max(0, state.savings || 0));
+            const metaPercent = Math.round((metaSavings / 2000) * 100);
+            document.getElementById('meta-savings-text').innerText = `$${(state.savings || 0).toFixed(2)} / $2,000`;
+            document.getElementById('meta-savings-bar').style.width = `${metaPercent}%`;
+
+            renderHygieneBtn();
             renderBlocks();
+            renderProgressTab();
+            renderLoans();
             renderRewards();
             renderHistoryLogs();
+        }
+
+        function renderHygieneBtn() {
+            const btn = document.getElementById('hygiene-btn');
+            if (state.hygieneDone) {
+                btn.className = 'checkbox-gamer checked';
+                btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+            } else {
+                btn.className = 'checkbox-gamer';
+                btn.innerHTML = '<i class="fa-solid fa-sparkles text-amber-400"></i>';
+            }
+        }
+
+        function toggleHygiene() {
+            state.hygieneDone = !state.hygieneDone;
+            if (state.hygieneDone) {
+                state.points += 5;
+                logActivity('Completó: "Revisión de Higiene Personal" (+5 pts)');
+            } else {
+                state.points = Math.max(0, state.points - 5);
+                logActivity('Desmarcó: "Revisión de Higiene Personal"');
+            }
+            saveState();
+            renderAll();
         }
 
         function renderBlocks() {
             const container = document.getElementById('blocks-container');
             container.innerHTML = '';
 
-            let totalTasks = 0;
-            let completedTasks = 0;
+            let totalSlots = 0;
+            let completedSlots = 0;
 
             state.blocks.forEach(block => {
                 let blockCompleted = 0;
-                totalTasks += block.tasks.length;
 
                 const blockCard = document.createElement('div');
                 blockCard.className = 'glow-card p-5 rounded-2xl space-y-4 border border-slate-800/80';
 
                 let tasksHtml = '';
                 block.tasks.forEach(task => {
-                    if (task.done) {
-                        completedTasks++;
-                        blockCompleted++;
-                    }
+                    totalSlots += 5;
+                    let dayChecks = '';
+
+                    DAYS.forEach((day, index) => {
+                        const isDone = task.daysDone && task.daysDone[index];
+                        if (isDone) {
+                            completedSlots++;
+                            blockCompleted++;
+                        }
+
+                        dayChecks += `
+                            <button onclick="toggleTaskDay('${block.id}', ${task.id}, ${index})" class="checkbox-gamer ${isDone ? 'checked' : ''}" title="${day}">
+                                ${isDone ? '<i class="fa-solid fa-check"></i>' : day}
+                            </button>
+                        `;
+                    });
 
                     tasksHtml += `
-                        <div class="bg-slate-900/60 border ${task.done ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-slate-800'} p-4 rounded-xl flex items-center justify-between transition">
-                            <div class="flex items-center space-x-3.5">
-                                <div onclick="toggleTask('${block.id}', ${task.id})" class="checkbox-gamer ${task.done ? 'checked' : ''}">
-                                    ${task.done ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
-                                </div>
+                        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 transition">
+                            <div class="flex items-start space-x-3">
                                 <div>
-                                    <h4 class="text-sm font-bold ${task.done ? 'line-through text-slate-400' : 'text-white'}">${task.title}</h4>
+                                    <h4 class="text-sm font-bold text-white">${task.title}</h4>
                                     <div class="flex items-center space-x-2 mt-0.5">
                                         <span class="text-xs text-slate-400 flex items-center">
                                             <i class="fa-regular fa-clock mr-1 text-[10px]"></i> ${task.time}
@@ -400,7 +573,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-500/20">+${task.pts} pts</span>
+                            <div class="flex items-center justify-between md:justify-end space-x-3">
+                                <div class="flex items-center space-x-1.5">${dayChecks}</div>
+                                <span class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-500/20 shrink-0">+${task.pts} pts</span>
+                            </div>
                         </div>
                     `;
                 });
@@ -412,7 +588,7 @@
                             <h4 class="font-extrabold text-sm text-amber-400 uppercase tracking-wide">${block.title}</h4>
                             <span class="text-xs text-slate-500 font-normal">${block.time}</span>
                         </div>
-                        <span class="text-xs font-mono font-bold text-slate-400">${blockCompleted}/${block.tasks.length}</span>
+                        <span class="text-xs font-mono font-bold text-slate-400">${blockCompleted}/${block.tasks.length * 5}</span>
                     </div>
                     <div class="space-y-3">${tasksHtml}</div>
                 `;
@@ -420,22 +596,33 @@
                 container.appendChild(blockCard);
             });
 
-            const percent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            const percent = totalSlots > 0 ? Math.round((completedSlots / totalSlots) * 100) : 0;
             document.getElementById('progress-percent').innerText = `${percent}%`;
+
+            const subtext = document.getElementById('objective-subtext');
+            if (percent === 100) {
+                subtext.innerText = "¡NIVEL DE HOY COMPLETADO! Eres un crack 🚀";
+                subtext.className = "text-xs text-emerald-400 font-bold mt-0.5";
+            } else {
+                subtext.innerText = "¡Paso a paso se llega lejos! Vamos por la siguiente tarea.";
+                subtext.className = "text-xs text-slate-400 mt-0.5";
+            }
         }
 
-        function toggleTask(blockId, taskId) {
+        function toggleTaskDay(blockId, taskId, dayIndex) {
             const block = state.blocks.find(b => b.id === blockId);
             if (block) {
                 const task = block.tasks.find(t => t.id === taskId);
                 if (task) {
-                    task.done = !task.done;
-                    if (task.done) {
+                    if (!task.daysDone) task.daysDone = [false, false, false, false, false];
+                    task.daysDone[dayIndex] = !task.daysDone[dayIndex];
+
+                    if (task.daysDone[dayIndex]) {
                         state.points += task.pts;
-                        logActivity(`Completó: "${task.title}" (+${task.pts} pts)`);
+                        logActivity(`Logró: "${task.title}" (${DAYS[dayIndex]}) (+${task.pts} pts)`);
                     } else {
                         state.points = Math.max(0, state.points - task.pts);
-                        logActivity(`Desmarcó: "${task.title}"`);
+                        logActivity(`Desmarcó: "${task.title}" (${DAYS[dayIndex]})`);
                     }
                     saveState();
                     renderAll();
@@ -443,13 +630,97 @@
             }
         }
 
-        function addDailySavings() {
-            state.savings = (state.savings || 0) + 50;
+        function renderProgressTab() {
+            let totalSlots = 0;
+            let completedSlots = 0;
+
+            state.blocks.forEach(block => {
+                block.tasks.forEach(task => {
+                    totalSlots += 5;
+                    if (task.daysDone) {
+                        task.daysDone.forEach(d => { if (d) completedSlots++; });
+                    }
+                });
+            });
+
+            const percent = totalSlots > 0 ? Math.round((completedSlots / totalSlots) * 100) : 0;
+            document.getElementById('progress-circle-percent').innerText = `${percent}%`;
+
+            const svgCircle = document.getElementById('progress-svg-circle');
+            if (svgCircle) svgCircle.setAttribute('stroke-dasharray', `${percent}, 100`);
+
+            document.getElementById('completed-tasks-count').innerText = completedSlots;
+
+            const motivText = document.getElementById('progress-motivation-text');
+            if (percent === 0) {
+                motivText.innerText = "¡Comienza marcando tus tareas para cargar la barra de energía!";
+            } else if (percent < 50) {
+                motivText.innerText = "¡Buen inicio, Santiago! Sigue avanzando en tus actividades.";
+            } else if (percent < 100) {
+                motivText.innerText = "¡Excelente energía! Estás muy cerca de completar el nivel.";
+            } else {
+                motivText.innerText = "¡Impresionante! 100% completado. ¡Eres un crack!";
+            }
+        }
+
+        function addDailySavings(amount) {
+            state.savings = (state.savings || 0) + amount;
             state.points = (state.points || 0) + 15;
-            logActivity(`Guardó $50.00 en el chanchito (+15 pts bonus)`);
+            logActivity(`Guardó $${amount.toFixed(2)} en el chanchito (+15 pts bonus)`);
             saveState();
             renderAll();
-            alert('¡Excelente! Guardaste $50 en tu ahorro y ganaste +15 puntos extra.');
+            alert(`¡Excelente! Guardaste $${amount.toFixed(2)} en tu ahorro y ganaste +15 puntos extra.`);
+        }
+
+        function customSavings() {
+            const val = prompt("Ingresa el monto a ingresar al chanchito ($):", "50.00");
+            if (val !== null) {
+                const amount = parseFloat(val);
+                if (!isNaN(amount) && amount > 0) {
+                    addDailySavings(amount);
+                }
+            }
+        }
+
+        function addLoan() {
+            const concept = prompt("Motivo o concepto del préstamo/deducción:");
+            if (!concept) return;
+            const amountVal = prompt("Monto a descontar ($):");
+            const amount = parseFloat(amountVal);
+            if (isNaN(amount) || amount <= 0) return;
+            const person = prompt("Persona a quien se presta / paga:", "Santiago");
+            const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+            if (!state.loans) state.loans = [];
+            state.loans.unshift({ concept, amount, person, date: dateStr });
+            state.savings = Math.max(0, (state.savings || 0) - amount);
+
+            logActivity(`Préstamo/Deducción: $${amount.toFixed(2)} (${concept})`);
+            saveState();
+            renderAll();
+        }
+
+        function renderLoans() {
+            const tbody = document.getElementById('loans-table-body');
+            if (!tbody) return;
+
+            if (!state.loans || state.loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-500">Sin préstamos o gastos registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            state.loans.forEach(loan => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800/60 hover:bg-slate-900/40';
+                tr.innerHTML = `
+                    <td class="p-2 font-semibold text-white">${loan.concept}</td>
+                    <td class="p-2 text-red-400 font-bold">-$${loan.amount.toFixed(2)}</td>
+                    <td class="p-2 text-slate-300">${loan.person}</td>
+                    <td class="p-2 text-slate-500">${loan.date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function renderRewards() {
